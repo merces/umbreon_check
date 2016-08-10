@@ -17,10 +17,10 @@ BITS 64
 
 %define stdout 1
 
-%define sys_write 1
-%define sys_open 2
-%define sys_exit 60
-%define sys_getdents 78
+%define SYS_write 1
+%define SYS_open 2
+%define SYS_exit 60
+%define SYS_getdents 78
 
 	section .data
 path: db "/usr/lib/", 0
@@ -32,7 +32,7 @@ _start:
 	mov rdx, (O_NONBLOCK | O_DIRECTORY | O_CLOEXEC)
 	mov rsi, O_RDONLY
 	mov rdi, path
-	mov rax, sys_open
+	mov rax, SYS_open
 	syscall
 
 	; int getdents(unsigned int fd, struct linux_dirent *dirp, unsigned int count);
@@ -40,7 +40,7 @@ _start:
 	sub rsp, rdx ; alloca()
 	mov rsi, rsp 
 	mov rdi, rax 		
-	mov rax, sys_getdents
+	mov rax, SYS_getdents
 	syscall
 
 	; int write(int fd, const void *buf, size_t count);
@@ -48,11 +48,11 @@ _start:
 	mov rsi, rsp
 	add rsi, 18 ; d_name offset
 	mov rdi, stdout
-	mov rax, sys_write
+	mov rax, SYS_write
 	syscall
 
 exit:
 	; void exit(int status);
 	mov rdi, 0
-	mov rax, sys_exit
+	mov rax, SYS_exit
 	syscall
